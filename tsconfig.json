@@ -1,10 +1,13 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
+  "compilerOptions": {
       "outDir": "./lib",
+      "allowJs": true,
+      "target": "esnext",
+      "pretty": true,
+      "module": "commonjs",
       "esModuleInterop": true
-    },
-    "include": [
-      "./src"
-    ]
-   }
+  },
+  "include": [
+    "./src"
+  ]
+}
