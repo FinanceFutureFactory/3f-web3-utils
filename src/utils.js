@@ -33,7 +33,7 @@ var ethereumBloomFilters = require('ethereum-bloom-filters');
  * @param {Object} object
  * @return {Boolean}
  */
-var isBN = function(object) {
+var isBN = function (object) {
     return BN.isBN(object);
 };
 
@@ -44,7 +44,7 @@ var isBN = function(object) {
  * @param {Object} object
  * @return {Boolean}
  */
-var isBigNumber = function(object) {
+var isBigNumber = function (object) {
     return object && object.constructor && object.constructor.name === 'BigNumber';
 };
 
@@ -55,7 +55,7 @@ var isBigNumber = function(object) {
  * @param {Number|String|BN} number, string, HEX string or BN
  * @return {BN} BN
  */
-var toBN = function(number) {
+var toBN = function (number) {
     try {
         return numberToBN.apply(null, arguments);
     } catch (e) {
@@ -71,7 +71,7 @@ var toBN = function(number) {
  * @param {Number|String|BN} number
  * @return {String}
  */
-var toTwosComplement = function(number) {
+var toTwosComplement = function (number) {
     return '0x' + toBN(number).toTwos(256).toString(16, 64);
 };
 
@@ -82,18 +82,20 @@ var toTwosComplement = function(number) {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-var isAddress = function(address) {
-    return true;
+var isAddress = function (address) {
+    if (address.length === 58){
+        return true;
+    }
     // check if it has the basic requirements of an address
-    // if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
-    //     return false;
-    //     // If it's ALL lowercase or ALL upppercase
-    // } else if (/^(0x|0X)?[0-9a-f]{40}$/.test(address) || /^(0x|0X)?[0-9A-F]{40}$/.test(address)) {
-    //     return true;
-    //     // Otherwise check each case
-    // } else {
-    //     return checkAddressChecksum(address);
-    // }
+    if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+        return false;
+        // If it's ALL lowercase or ALL upppercase
+    } else if (/^(0x|0X)?[0-9a-f]{40}$/.test(address) || /^(0x|0X)?[0-9A-F]{40}$/.test(address)) {
+        return true;
+        // Otherwise check each case
+    } else {
+        return checkAddressChecksum(address);
+    }
 };
 
 
@@ -105,17 +107,20 @@ var isAddress = function(address) {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-var checkAddressChecksum = function(address) {
+var checkAddressChecksum = function (address) {
     // Check each case
-    // address = address.replace(/^0x/i,'');
-    // var addressHash = sha3(address.toLowerCase()).replace(/^0x/i,'');
+    if (address.length === 58) {
+        return true;
+    }
+    address = address.replace(/^0x/i, '');
+    var addressHash = sha3(address.toLowerCase()).replace(/^0x/i, '');
 
-    // for (var i = 0; i < 40; i++ ) {
-    //     // the nth letter should be uppercase if the nth digit of casemap is 1
-    //     if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) || (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
-    //         return false;
-    //     }
-    // }
+    for (var i = 0; i < 40; i++) {
+        // the nth letter should be uppercase if the nth digit of casemap is 1
+        if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) || (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
+            return false;
+        }
+    }
     return true;
 };
 
@@ -128,7 +133,7 @@ var checkAddressChecksum = function(address) {
  * @param {String} sign, by default 0
  * @returns {String} right aligned string
  */
-var leftPad = function(string, chars, sign) {
+var leftPad = function (string, chars, sign) {
     var hasPrefix = /^0x/i.test(string) || typeof string === 'number';
     string = string.toString(16).replace(/^0x/i, '');
 
@@ -146,7 +151,7 @@ var leftPad = function(string, chars, sign) {
  * @param {String} sign, by default 0
  * @returns {String} right aligned string
  */
-var rightPad = function(string, chars, sign) {
+var rightPad = function (string, chars, sign) {
     var hasPrefix = /^0x/i.test(string) || typeof string === 'number';
     string = string.toString(16).replace(/^0x/i, '');
 
@@ -163,7 +168,7 @@ var rightPad = function(string, chars, sign) {
  * @param {String} str
  * @returns {String} hex representation of input string
  */
-var utf8ToHex = function(str) {
+var utf8ToHex = function (str) {
     str = utf8.encode(str);
     var hex = "";
 
@@ -191,7 +196,7 @@ var utf8ToHex = function(str) {
  * @param {String} hex
  * @returns {String} ascii string representation of hex value
  */
-var hexToUtf8 = function(hex) {
+var hexToUtf8 = function (hex) {
     if (!isHexStrict(hex))
         throw new Error('The parameter "' + hex + '" must be a valid HEX string.');
 
@@ -225,7 +230,7 @@ var hexToUtf8 = function(hex) {
  * @param {String|Number|BN} value
  * @return {String}
  */
-var hexToNumber = function(value) {
+var hexToNumber = function (value) {
     if (!value) {
         return value;
     }
@@ -244,7 +249,7 @@ var hexToNumber = function(value) {
  * @param {String|Number|BN} value
  * @return {String}
  */
-var hexToNumberString = function(value) {
+var hexToNumberString = function (value) {
     if (!value) return value;
 
     if (typeof value === 'string' && !isHexStrict(value)) {
@@ -262,7 +267,7 @@ var hexToNumberString = function(value) {
  * @param {String|Number|BN} value
  * @return {String}
  */
-var numberToHex = function(value) {
+var numberToHex = function (value) {
     if ((value === null || value === undefined)) {
         return value;
     }
@@ -287,7 +292,7 @@ var numberToHex = function(value) {
  * @param {Array} bytes
  * @return {String} the hex string
  */
-var bytesToHex = function(bytes) {
+var bytesToHex = function (bytes) {
     for (var hex = [], i = 0; i < bytes.length; i++) {
         /* jshint ignore:start */
         hex.push((bytes[i] >>> 4).toString(16));
@@ -306,7 +311,7 @@ var bytesToHex = function(bytes) {
  * @param {string} hex
  * @return {Array} the byte array
  */
-var hexToBytes = function(hex) {
+var hexToBytes = function (hex) {
     hex = hex.toString(16);
 
     if (!isHexStrict(hex)) {
@@ -330,7 +335,7 @@ var hexToBytes = function(hex) {
  * @param {Boolean} returnType
  * @return {String}
  */
-var toHex = function(value, returnType) {
+var toHex = function (value, returnType) {
     /*jshint maxcomplexity: false */
 
     if (isAddress(value)) {
@@ -371,7 +376,7 @@ var toHex = function(value, returnType) {
  * @param {String} hex to be checked
  * @returns {Boolean}
  */
-var isHexStrict = function(hex) {
+var isHexStrict = function (hex) {
     return ((typeof hex === 'string' || typeof hex === 'number') && /^(-)?0x[0-9a-f]*$/i.test(hex));
 };
 
@@ -382,7 +387,7 @@ var isHexStrict = function(hex) {
  * @param {String} hex to be checked
  * @returns {Boolean}
  */
-var isHex = function(hex) {
+var isHex = function (hex) {
     return ((typeof hex === 'string' || typeof hex === 'number') && /^(-0x|0x)?[0-9a-f]*$/i.test(hex));
 };
 
@@ -393,7 +398,7 @@ var isHex = function(hex) {
  * @param {String} str to be checked
  * @returns {String}
  */
-var stripHexPrefix = function(str) {
+var stripHexPrefix = function (str) {
     if (str !== 0 && isHex(str))
         return str.replace(/^(-)?0x/i, '$1')
     return str;
@@ -406,7 +411,7 @@ var stripHexPrefix = function(str) {
  * @param {String} bloom encoded bloom filter
  * @return {Boolean}
  */
-var isBloom = function(bloom) {
+var isBloom = function (bloom) {
     return ethereumBloomFilters.isBloom(bloom);
 };
 
@@ -419,7 +424,7 @@ var isBloom = function(bloom) {
  * @param {String} bloom ethereum addresss
  * @return {Boolean}
  */
-var isUserEthereumAddressInBloom = function(bloom, ethereumAddress) {
+var isUserEthereumAddressInBloom = function (bloom, ethereumAddress) {
     return ethereumBloomFilters.isUserEthereumAddressInBloom(bloom, ethereumAddress);
 };
 
@@ -432,7 +437,7 @@ var isUserEthereumAddressInBloom = function(bloom, ethereumAddress) {
  * @param {String} contractAddress contract addresss
  * @return {Boolean}
  */
-var isContractAddressInBloom = function(bloom, contractAddress) {
+var isContractAddressInBloom = function (bloom, contractAddress) {
     return ethereumBloomFilters.isContractAddressInBloom(bloom, contractAddress);
 };
 
@@ -443,7 +448,7 @@ var isContractAddressInBloom = function(bloom, contractAddress) {
  * @param {String} topic encoded topic
  * @return {Boolean}
  */
-var isTopic = function(topic) {
+var isTopic = function (topic) {
     return ethereumBloomFilters.isTopic(topic);
 };
 
@@ -456,7 +461,7 @@ var isTopic = function(topic) {
  * @param {String} topic encoded topic
  * @return {Boolean}
  */
-var isTopicInBloom = function(bloom, topic) {
+var isTopicInBloom = function (bloom, topic) {
     return ethereumBloomFilters.isTopicInBloom(bloom, topic);
 };
 
@@ -469,7 +474,7 @@ var isTopicInBloom = function(bloom, topic) {
  * @param {String | Uint8Array} topic encoded value
  * @return {Boolean}
  */
-var isInBloom = function(bloom, topic) {
+var isInBloom = function (bloom, topic) {
     return ethereumBloomFilters.isInBloom(bloom, topic);
 };
 
@@ -483,7 +488,7 @@ var isInBloom = function(bloom, topic) {
  */
 var SHA3_NULL_S = '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470';
 
-var sha3 = function(value) {
+var sha3 = function (value) {
     if (isBN(value)) {
         value = value.toString();
     }
@@ -513,7 +518,7 @@ sha3._Hash = ethereumjsUtil.keccak256;
  *
  * @returns {string}
  */
-var sha3Raw = function(value) {
+var sha3Raw = function (value) {
     value = sha3(value);
 
     if (value === null) {
@@ -531,12 +536,12 @@ var sha3Raw = function(value) {
  * @param {String|Number|BN} value
  * @return {Number}
  */
-var toNumber = function(value) {
+var toNumber = function (value) {
     return typeof value === 'number' ? value : hexToNumber(toHex(value));
 }
 
 // 1.x currently accepts 0x... strings, bn.js after update doesn't. it would be a breaking change
-var BNwrapped = function(value) {
+var BNwrapped = function (value) {
     // check negative
     if (typeof value == "string" && value.includes("0x")) {
         const [negative, hexValue] = value.toLocaleLowerCase().startsWith('-') ? ["-", value.slice(3)] : ["", value.slice(2)];

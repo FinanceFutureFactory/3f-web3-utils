@@ -43,15 +43,15 @@ var _fireError = function (error, emitter, reject, callback, optionalData) {
     /*jshint maxcomplexity: 10 */
 
     // add data if given
-    if(!!error && typeof error === 'object' && !(error instanceof Error) &&  error.data) {
-        if(!!error.data && typeof error.data === 'object' || Array.isArray(error.data)) {
+    if (!!error && typeof error === 'object' && !(error instanceof Error) && error.data) {
+        if (!!error.data && typeof error.data === 'object' || Array.isArray(error.data)) {
             error.data = JSON.stringify(error.data, null, 2);
         }
 
-        error = error.message +"\n"+ error.data;
+        error = error.message + "\n" + error.data;
     }
 
-    if(typeof error === 'string') {
+    if (typeof error === 'string') {
         error = new Error(error);
     }
 
@@ -64,9 +64,9 @@ var _fireError = function (error, emitter, reject, callback, optionalData) {
         if (
             emitter &&
             (typeof emitter.listeners === 'function' &&
-            emitter.listeners('error').length) || typeof callback === 'function'
+                emitter.listeners('error').length) || typeof callback === 'function'
         ) {
-            emitter.catch(function(){});
+            emitter.catch(function () { });
         }
         // reject later, to be able to return emitter
         setTimeout(function () {
@@ -74,7 +74,7 @@ var _fireError = function (error, emitter, reject, callback, optionalData) {
         }, 1);
     }
 
-    if(emitter && typeof emitter.emit === 'function') {
+    if (emitter && typeof emitter.emit === 'function') {
         // emit later, to be able to return emitter
         setTimeout(function () {
             emitter.emit('error', error, optionalData);
@@ -109,12 +109,11 @@ var _jsonInterfaceMethodToString = function (json) {
  * @param {Object} puts
  * @return {Array} parameters as strings
  */
-var _flattenTypes = function(includeTuple, puts)
-{
+var _flattenTypes = function (includeTuple, puts) {
     // console.log("entered _flattenTypes. inputs/outputs: " + puts)
     var types = [];
 
-    puts.forEach(function(param) {
+    puts.forEach(function (param) {
         if (typeof param.components === 'object') {
             if (param.type.substring(0, 5) !== 'tuple') {
                 throw new Error('components found but type is not tuple; report on GitHub');
@@ -124,11 +123,11 @@ var _flattenTypes = function(includeTuple, puts)
             if (arrayBracket >= 0) { suffix = param.type.substring(arrayBracket); }
             var result = _flattenTypes(includeTuple, param.components);
             // console.log("result should have things: " + result)
-            if(Array.isArray(result) && includeTuple) {
+            if (Array.isArray(result) && includeTuple) {
                 // console.log("include tuple word, and its an array. joining...: " + result.types)
                 types.push('tuple(' + result.join(',') + ')' + suffix);
             }
-            else if(!includeTuple) {
+            else if (!includeTuple) {
                 // console.log("don't include tuple, but its an array. joining...: " + result)
                 types.push('(' + result.join(',') + ')' + suffix);
             }
@@ -144,7 +143,7 @@ var _flattenTypes = function(includeTuple, puts)
 
     return types;
 };
- 
+
 
 /**
  * Returns a random hex string by the given bytes size
@@ -152,7 +151,7 @@ var _flattenTypes = function(includeTuple, puts)
  * @param {Number} size
  * @returns {string}
  */
-var randomHex = function(size) {
+var randomHex = function (size) {
     return '0x' + randombytes(size).toString('hex');
 };
 
@@ -163,7 +162,7 @@ var randomHex = function(size) {
  * @param {String} hex
  * @returns {String} ascii string representation of hex value
  */
-var hexToAscii = function(hex) {
+var hexToAscii = function (hex) {
     if (!utils.isHexStrict(hex))
         throw new Error('The parameter must be a valid HEX string.');
 
@@ -172,7 +171,7 @@ var hexToAscii = function(hex) {
     if (hex.substring(0, 2) === '0x') {
         i = 2;
     }
-    for (; i < l; i+=2) {
+    for (; i < l; i += 2) {
         var code = parseInt(hex.slice(i, i + 2), 16);
         str += String.fromCharCode(code);
     }
@@ -187,11 +186,11 @@ var hexToAscii = function(hex) {
  * @param {String} str
  * @returns {String} hex representation of input string
  */
-var asciiToHex = function(str) {
-    if(!str)
+var asciiToHex = function (str) {
+    if (!str)
         return "0x00";
     var hex = "";
-    for(var i = 0; i < str.length; i++) {
+    for (var i = 0; i < str.length; i++) {
         var code = str.charCodeAt(i);
         var n = code.toString(16);
         hex += n.length < 2 ? '0' + n : n;
@@ -213,7 +212,7 @@ var asciiToHex = function(str) {
 var getUnitValue = function (unit) {
     unit = unit ? unit.toLowerCase() : 'ether';
     if (!ethjsUnit.unitMap[unit]) {
-        throw new Error('This unit "'+ unit +'" doesn\'t exist, please use the one of the following units' + JSON.stringify(ethjsUnit.unitMap, null, 2));
+        throw new Error('This unit "' + unit + '" doesn\'t exist, please use the one of the following units' + JSON.stringify(ethjsUnit.unitMap, null, 2));
     }
     return unit;
 };
@@ -239,10 +238,10 @@ var getUnitValue = function (unit) {
  * @param {String} unit the unit to convert to, default ether
  * @return {String|Object} When given a BN object it returns one as well, otherwise a number
  */
-var fromWei = function(number, unit) {
+var fromWei = function (number, unit) {
     unit = getUnitValue(unit);
 
-    if(!utils.isBN(number) && !(typeof number === 'string')) {
+    if (!utils.isBN(number) && !(typeof number === 'string')) {
         throw new Error('Please pass numbers as strings or BN objects to avoid precision errors.');
     }
 
@@ -271,10 +270,10 @@ var fromWei = function(number, unit) {
  * @param {String} unit the unit to convert from, default ether
  * @return {String|Object} When given a BN object it returns one as well, otherwise a number
  */
-var toWei = function(number, unit) {
+var toWei = function (number, unit) {
     unit = getUnitValue(unit);
 
-    if(!utils.isBN(number) && !(typeof number === 'string')) {
+    if (!utils.isBN(number) && !(typeof number === 'string')) {
         throw new Error('Please pass numbers as strings or BN objects to avoid precision errors.');
     }
 
@@ -292,18 +291,21 @@ var toWei = function(number, unit) {
  * @return {String}
  */
 var toChecksumAddress = function (address) {
+
+    if (address.length === 58) {
+        return address
+    }
+
     if (typeof address === 'undefined') return '';
 
-    if(!/^(0x)?[0-9a-f]{40}$/i.test(address))
-        throw new Error('Given address "'+ address +'" is not a valid Ethereum address.');
+    if (!/^(0x)?[0-9a-f]{40}$/i.test(address))
+        throw new Error('Given address "' + address + '" is not a valid Ethereum address.');
 
-
-
-    address = address.toLowerCase().replace(/^0x/i,'');
-    var addressHash = utils.sha3(address).replace(/^0x/i,'');
+    address = address.toLowerCase().replace(/^0x/i, '');
+    var addressHash = utils.sha3(address).replace(/^0x/i, '');
     var checksumAddress = '0x';
 
-    for (var i = 0; i < address.length; i++ ) {
+    for (var i = 0; i < address.length; i++) {
         // If ith character is 8 to f then make it uppercase
         if (parseInt(addressHash[i], 16) > 7) {
             checksumAddress += address[i].toUpperCase();
@@ -327,10 +329,10 @@ var toChecksumAddress = function (address) {
  *
  * @returns {Number} -1, 0, or 1
  */
-var compareBlockNumbers = function(a, b) {
+var compareBlockNumbers = function (a, b) {
     if (a == b) {
         return 0;
-    } else if (("genesis" == a || "earliest" == a || 0 == a) && ("genesis" == b || "earliest" ==  b || 0 == b)) {
+    } else if (("genesis" == a || "earliest" == a || 0 == a) && ("genesis" == b || "earliest" == b || 0 == b)) {
         return 0;
     } else if ("genesis" == a || "earliest" == a) {
         // b !== a, thus a < b
@@ -360,9 +362,9 @@ var compareBlockNumbers = function(a, b) {
     } else {
         let bnA = new BN(a);
         let bnB = new BN(b);
-        if(bnA.lt(bnB)) {
+        if (bnA.lt(bnB)) {
             return -1;
-        } else if(bnA.eq(bnB)) {
+        } else if (bnA.eq(bnB)) {
             return 0;
         } else {
             return 1;
